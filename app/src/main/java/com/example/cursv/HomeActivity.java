@@ -37,6 +37,8 @@ public class HomeActivity extends DatabaseUtils {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, Health.class);
+                intent.putExtra("humanId", humanId);
+                intent.putExtra("idPet1", idPet1);
                 startActivity(intent);
             }
         });

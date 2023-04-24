@@ -41,11 +41,10 @@
         app:srcCompat="@drawable/bell" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/textHumanName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
-        android:text="Привет,"
+        android:layout_marginTop="108dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintStart_toStartOf="parent"

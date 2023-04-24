@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "372185279157",
+    "firebase_url": "https://cursv-8d57f-default-rtdb.firebaseio.com",
+    "project_id": "cursv-8d57f",
+    "storage_bucket": "cursv-8d57f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372185279157:android:1bc3a9a7f73ab785c56cfc",
+        "android_client_info": {
+          "package_name": "com.example.cursv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "372185279157-jnarfk388cavvlfqntj3g7klqmfn25v5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNQ6m_iv-mWkla9LzAtEedFk0USwm8670"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372185279157-jnarfk388cavvlfqntj3g7klqmfn25v5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

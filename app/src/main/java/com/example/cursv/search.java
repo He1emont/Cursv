@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cursv.adapters.ServiceAdapter;
 import com.example.cursv.Models.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class search extends DatabaseUtils {
@@ -24,9 +25,13 @@ public class search extends DatabaseUtils {
         setContentView(R.layout.activity_search);
 
         int humanId = getIntent().getIntExtra("humanId", 0);
+
         services = getAllServices();
         for (Service service : services) {
-            Log.d("Service", "ID: " + service.getIdService() + ", Name: " + service.getNameService() + ", Cost: " + service.getCostService());
+            Log.d("Service", "ID: " + service.getIdService() + ", Name: "
+                    + service.getNameService() + ", Cost: "
+                    + service.getCostService() + ", Doc: "
+                    + service.getDoctor());
         }
         rv_services = findViewById(R.id.rv_services);
         rv_services.setLayoutManager(new LinearLayoutManager(this));
@@ -42,7 +47,8 @@ public class search extends DatabaseUtils {
     //Метод для инициализации адаптера списка
     @SuppressLint("NotifyDataSetChanged")
     private void initializeAdapter(){
-        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this);
+        ArrayList<String> infoPet = getPetInfo(Preference.getIntIdHuman("idPet1", search.this));
+        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this, infoPet.get(0));
         adapterMenu.notifyDataSetChanged();
         rv_services.setAdapter(adapterMenu);
     }

@@ -2,6 +2,7 @@ package com.example.cursv;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class MainActivity extends DatabaseUtils {
         int humanId = Preference.getIntIdHuman("humanId", MainActivity.this);
         int petId = Preference.getIntIdHuman("idPet1", MainActivity.this);
         if(petId != 0 && humanId != 0){
+            Log.d("Tesst", "test");
             startActivity(HomeActivity.class);
         }
         if(!login.equals("") || !password.equals("")){

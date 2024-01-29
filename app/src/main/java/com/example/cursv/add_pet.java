@@ -17,7 +17,11 @@ public class add_pet extends DatabaseUtils {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
 
-        int humanId = getIntent().getIntExtra("humanId", 0);
+        int humanId = Preference.getIntIdHuman("humanId", add_pet.this);
+        int petId = Preference.getIntIdHuman("idPet1", add_pet.this);
+        if(petId != 0){
+            startHomeActivity();
+        }
 
         EditText edName = findViewById(R.id.edName);
         EditText edType = findViewById(R.id.edType);
@@ -25,36 +29,30 @@ public class add_pet extends DatabaseUtils {
         EditText edDateOfBirth = findViewById(R.id.edDateOfBirth);
 
         ImageButton back = findViewById(R.id.imageButton_back2);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        back.setOnClickListener(view -> finish());
 
         Button next = findViewById(R.id.button_next2);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(edName.length() == 0 || edType.length() == 0 || edGender.length() == 0 || edDateOfBirth.length() == 0){
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Заполнены не все необходимые поля", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                else{
-                    String name = edName.getText().toString();
-                    String type = edType.getText().toString();
-                    String gender = edGender.getText().toString();
-                    String dateOfBirth = edDateOfBirth.getText().toString();
+        next.setOnClickListener(view -> {
+            if(edName.length() == 0 || edType.length() == 0 || edGender.length() == 0 || edDateOfBirth.length() == 0){
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Заполнены не все необходимые поля", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            else{
+                String name = edName.getText().toString();
+                String type = edType.getText().toString();
+                String gender = edGender.getText().toString();
+                String dateOfBirth = edDateOfBirth.getText().toString();
 
-                    int idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
-
-                    Intent intent = new Intent(add_pet.this, HomeActivity.class);
-                    intent.putExtra("humanId", humanId);
-                    intent.putExtra("idPet1", idPet1);
-                    startActivity(intent);
-                }
+                int idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
+                Preference.setIntIdHuman("idPet1", idPet1, add_pet.this);
+                startHomeActivity();
             }
         });
+    }
+
+    private void startHomeActivity(){
+        Intent intent = new Intent(add_pet.this, HomeActivity.class);
+        startActivity(intent);
     }
 }

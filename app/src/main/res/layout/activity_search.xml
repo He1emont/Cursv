@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="200dp"
         android:layout_marginTop="-30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,8 +57,9 @@
         android:id="@+id/textView13"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выберите питомца"
-        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="Услуги"
+        android:layout_marginTop="20dp"
         android:textSize="18sp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
@@ -78,40 +79,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/map" />
 
-    <LinearLayout
-        android:layout_width="384dp"
-        android:layout_height="157dp"
-        android:layout_marginHorizontal="10dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_services"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="396dp"
-        android:background="@drawable/rounded_button"
-        android:orientation="vertical"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.148"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:fontFamily="@font/ibm_plex_serif_medium"
-            android:text="Услуга-1"
-            android:textColor="@color/white"
-            android:textSize="18dp" />
-
-
-        <TextView
-            android:layout_width="81dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:fontFamily="@font/ibm_plex_serif_medium"
-            android:text="Цена"
-            android:textColor="@color/white"
-            android:textSize="18dp" />
-
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

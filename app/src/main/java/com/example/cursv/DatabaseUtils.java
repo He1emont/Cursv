@@ -1,12 +1,17 @@
 package com.example.cursv;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.lang.reflect.Array;
+import com.example.cursv.Models.Service;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DatabaseUtils extends AppCompatActivity {
@@ -17,6 +22,8 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание таблиц БД, если они не существуют
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER, Name TEXT, Cost DECIMAL, UNIQUE(id))");
+        dataSetForService();
     }
 
     //Добавление пользователя
@@ -33,6 +40,54 @@ public class DatabaseUtils extends AppCompatActivity {
         database.close();
 
         return id;
+    }
+
+    private static final String TABLE_NAME = "Services";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "Name";
+    private static final String COLUMN_COST = "Cost";
+
+    // Метод для добавления записи Service в таблицу Services
+    public long addService(Service service) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, service.getNameService());
+        values.put(COLUMN_COST, service.getCostService());
+
+        long result = db.insert(TABLE_NAME, null, values);
+        db.close();
+        return result;
+    }
+    // Метод для получения списка всех услуг из таблицы Services
+    public List<Service> getAllServices() {
+        List<Service> servicesList = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM " + TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+
+            Service service = new Service(id, name, cost);
+            servicesList.add(service);
+        }
+
+        cursor.close();
+        db.close();
+
+        return servicesList;
+    }
+
+    private void dataSetForService(){
+        Service service1 = new Service(1, "Услуга 1", 100.0);
+        Service service2 = new Service(2, "Услуга 2", 2000.0);
+        Service service3 = new Service(3, "Услуга 3", 300.0);
+        addService(service1);
+        addService(service2);
+        addService(service3);
     }
 
     //Добавление питомца
@@ -67,7 +122,7 @@ public class DatabaseUtils extends AppCompatActivity {
         }
         queryHuman.close();
         database.close();
-
+        Log.d("Human", name);
         return name;
     }
 

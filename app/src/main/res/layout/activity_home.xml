@@ -116,4 +116,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bell" />
 
+    <ImageButton
+        android:id="@+id/btn_logOut"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:backgroundTint="@color/btnColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_logout"
+        android:scaleType="fitCenter"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

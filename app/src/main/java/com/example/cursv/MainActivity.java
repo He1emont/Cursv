@@ -24,12 +24,6 @@ public class MainActivity extends DatabaseUtils {
 
         String login = Preference.getAuthSettings(loginPref, MainActivity.this);
         String password = Preference.getAuthSettings(passwordPref, MainActivity.this);
-        int humanId = Preference.getIntIdHuman("humanId", MainActivity.this);
-        int petId = Preference.getIntIdHuman("idPet1", MainActivity.this);
-        if(petId != 0 && humanId != 0){
-            Log.d("Tesst", "test");
-            startActivity(HomeActivity.class);
-        }
         if(!login.equals("") || !password.equals("")){
             startActivity(hello_there.class);
         }

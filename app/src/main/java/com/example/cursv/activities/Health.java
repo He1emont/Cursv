@@ -1,13 +1,13 @@
-package com.example.cursv;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.cursv.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.cursv.DatabaseUtils;
+import com.example.cursv.R;
 
 public class Health extends DatabaseUtils {
 
@@ -33,19 +33,15 @@ public class Health extends DatabaseUtils {
         });
 
         Button next = findViewById(R.id.button_search);
-        next.setOnClickListener(view -> {
-            Intent intent = new Intent(Health.this, search.class);
-            intent.putExtra("humanId", humanId);
-            intent.putExtra("typeService", 1);
-            startActivity(intent);
-        });
+        next.setOnClickListener(view -> startSearch(humanId, 1));
 
         Button next2 = findViewById(R.id.button_search2);
-        next2.setOnClickListener(view -> {
-            Intent intent = new Intent(Health.this, search.class);
-            intent.putExtra("humanId", humanId);
-            intent.putExtra("typeService", 2);
-            startActivity(intent);
-        });
+        next2.setOnClickListener(view -> startSearch(humanId, 2));
+    }
+    private void startSearch(int humanId, int typeService){
+        Intent intent = new Intent(Health.this, search.class);
+        intent.putExtra("humanId", humanId);
+        intent.putExtra("typeService", typeService);
+        startActivity(intent);
     }
 }

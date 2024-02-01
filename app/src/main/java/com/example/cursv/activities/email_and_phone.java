@@ -48,8 +48,8 @@ public class email_and_phone extends DatabaseUtils {
                 String enterEmail = edEmail.getText().toString();
                 String enterPhone = edPhone.getText().toString();
 
-                int idHuman = addHuman(login, password, fullName, enterEmail, enterPhone);
-                Preference.setIntIdHuman("humanId", idHuman, email_and_phone.this);
+                long idHuman = addHuman(login, password, fullName, enterEmail, enterPhone);
+                Preference.setIntIdHuman("humanId", (int) idHuman, email_and_phone.this);
                 startAddPet();
             }
         });

@@ -7,22 +7,32 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.example.cursv.DatabaseUtils;
 import com.example.cursv.Models.Service;
+import com.example.cursv.Models.SigningUpForService;
 import com.example.cursv.R;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.List;
 
-public class SigningUpForServiceActivity extends AppCompatActivity {
+public class SigningUpForServiceActivity extends DatabaseUtils {
 
     private ImageButton ibtn_close;
     private TextView tv_ss_service_name, tv_date_time;
     private LinearLayout ll_ss_date, ll_ss_time;
     private Service service;
+    private Button btn_signing_up;
     private int humanId;
     private Calendar dateAndTime = Calendar.getInstance();
     @Override
@@ -34,9 +44,18 @@ public class SigningUpForServiceActivity extends AppCompatActivity {
             service = (Service) intent.getSerializableExtra("service");
             humanId = getIntent().getIntExtra("humanId", 0);
         }
+        Log.d("UserName", getHumanName(humanId));
         initViews();
         initListeners();
         tv_ss_service_name.setText(service.getNameService());
+        List<SigningUpForService> signings = getAllSigning();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        for (SigningUpForService signing : signings) {
+            Log.d("SigningUpForService","id: " + signing.getId()
+                    + " Date: " + signing.getDate().format(formatter)
+                    + " service/human: " + signing.getIdService()
+                    + "/" + signing.getIdHuman());
+        }
     }
 
     private void initViews(){
@@ -45,6 +64,7 @@ public class SigningUpForServiceActivity extends AppCompatActivity {
         tv_date_time = findViewById(R.id.tv_date_time);
         ll_ss_date = findViewById(R.id.ll_ss_date);
         ll_ss_time = findViewById(R.id.ll_ss_time);
+        btn_signing_up = findViewById(R.id.btn_signing_up);
     }
 
     private void initListeners(){
@@ -52,12 +72,14 @@ public class SigningUpForServiceActivity extends AppCompatActivity {
             dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
             dateAndTime.set(Calendar.MINUTE, minute);
             setInitialDateTime();
+            Log.d("SigningUpForService",String.valueOf(dateAndTime.getTimeInMillis()));
         };
         DatePickerDialog.OnDateSetListener d = (view, year, monthOfYear, dayOfMonth) -> {
             dateAndTime.set(Calendar.YEAR, year);
             dateAndTime.set(Calendar.MONTH, monthOfYear);
             dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             setInitialDateTime();
+            Log.d("SigningUpForService",String.valueOf(dateAndTime.getTimeInMillis()));
         };
         ll_ss_date.setOnClickListener(view ->
                 new DatePickerDialog(SigningUpForServiceActivity.this, d,
@@ -73,6 +95,24 @@ public class SigningUpForServiceActivity extends AppCompatActivity {
                         .show()
         );
         ibtn_close.setOnClickListener(view -> finish());
+        btn_signing_up.setOnClickListener(view -> orderingService());
+    }
+
+    private void orderingService() {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
+                ZoneId.systemDefault()
+        );
+        SigningUpForService signingUpForService = new SigningUpForService(dateAndTime.getTimeInMillis(), localDateTime, service.getIdService(), humanId);
+        long id = addSigningUpForService(signingUpForService);
+        Log.d("SigningUpForService",String.valueOf(id));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        SigningUpForService signing = getSigningUpForServiceById(id);
+        Log.d("SigningUpForService","id: "
+                + signing.getId() + " Date: "
+                + signing.getDate().format(formatter) + " service/human: "
+                + signing.getIdService() + "/"
+                + signing.getIdHuman());
     }
 
     private void setInitialDateTime() {

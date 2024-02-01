@@ -1,12 +1,14 @@
 package com.example.cursv.Models;
 
+import java.time.LocalDateTime;
+
 public class SigningUpForService {
-    private int id;
-    private String date;
+    private long id;
+    private LocalDateTime date;
     private int idService;
     private int idHuman;
 
-    public SigningUpForService(int id, String date, int idService, int idHuman) {
+    public SigningUpForService(long id, LocalDateTime date, int idService, int idHuman) {
         this.id = id;
         this.date = date;
         this.idService = idService;
@@ -21,7 +23,7 @@ public class SigningUpForService {
         this.idHuman = idHuman;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -29,11 +31,11 @@ public class SigningUpForService {
         this.id = id;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

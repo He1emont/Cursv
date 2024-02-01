@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cursv.Models.Service;
 import com.example.cursv.Models.SigningUpForService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,24 +23,23 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание или открытие базы данных "ReaDocs"
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         //Создание таблиц БД, если они не существуют
-        database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id INTEGER, Date TEXT,  idService INTEGER, idHuman INTEGER, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
         dataSetForService();
     }
 
     //Добавление пользователя
-    public int addHuman(String loginHuman, String passwordHuman, String fullNameHuman, String emailHuman, String phoneHuman) {
+    public long addHuman(String loginHuman, String passwordHuman, String fullNameHuman, String emailHuman, String phoneHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
-        Cursor queryHuman = database.rawQuery("SELECT * FROM Human;", null);
-
-        int id = queryHuman.getCount();
-
-        database.execSQL("INSERT INTO Human VALUES " +
-                "(" + id + ", '" + loginHuman + "', '" + passwordHuman + "', '" + fullNameHuman + "', '" + emailHuman + "', '" + phoneHuman + "');");
-
-        queryHuman.close();
+        ContentValues values = new ContentValues();
+        values.put("Login", loginHuman);
+        values.put("Password", passwordHuman);
+        values.put("FullName", fullNameHuman);
+        values.put("Email", emailHuman);
+        values.put("Phone", phoneHuman);
+        long id = database.insert("Human", null, values);
         database.close();
 
         return id;
@@ -47,13 +48,65 @@ public class DatabaseUtils extends AppCompatActivity {
     public long addSigningUpForService(SigningUpForService signingUpForService) {
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         ContentValues values = new ContentValues();
-        values.put("Date", signingUpForService.getDate());
+        values.put("id", signingUpForService.getId());
+        values.put("Date", signingUpForService.getDate().toString());
         values.put("idService", signingUpForService.getIdService());
+        values.put("idHuman", signingUpForService.getIdHuman());
 
-        long result = db.insert("SigningUpForServices", null, values);
+        db.insert("SigningUpForServices", null, values);
 
         db.close();
-        return result;
+        return signingUpForService.getId();
+    }
+
+    public List<SigningUpForService> getAllSigning() {
+        List<SigningUpForService> signingUpForServices = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM SigningUpForServices";
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+            signingUpForServices.add(signingUpForService);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForServices;
+    }
+
+    public SigningUpForService getSigningUpForServiceById(long id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM SigningUpForServices WHERE id = " + id;
+        Cursor cursor = db.rawQuery(query, null);
+
+        SigningUpForService signingUpForService = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+
+            // Преобразование строки в LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+
+            signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForService;
     }
 
     private static final String TABLE_NAME = "Services";

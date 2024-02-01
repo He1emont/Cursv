@@ -25,8 +25,10 @@ public class search extends DatabaseUtils {
         setContentView(R.layout.activity_search);
 
         int humanId = getIntent().getIntExtra("humanId", 0);
+        int idType = getIntent().getIntExtra("typeService", 0);
 
-        services = getAllServices();
+        services = getServicesByType(idType);
+//        services = getAllServices();
         for (Service service : services) {
             Log.d("Service", "ID: " + service.getIdService() + ", Name: "
                     + service.getNameService() + ", Cost: "

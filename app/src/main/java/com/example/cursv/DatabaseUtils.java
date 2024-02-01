@@ -22,7 +22,7 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание таблиц БД, если они не существуют
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER, Name TEXT, Cost DECIMAL, Doctor TEXT, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, UNIQUE(id))");
         dataSetForService();
     }
 
@@ -47,6 +47,8 @@ public class DatabaseUtils extends AppCompatActivity {
     private static final String COLUMN_NAME = "Name";
     private static final String COLUMN_COST = "Cost";
     private static final String COLUMN_DOCTOR = "Doctor";
+    private static final String COLUMN_TYPE = "idType";
+
 
     // Метод для добавления записи Service в таблицу Services
     public long addService(Service service) {
@@ -55,6 +57,7 @@ public class DatabaseUtils extends AppCompatActivity {
         values.put(COLUMN_NAME, service.getNameService());
         values.put(COLUMN_COST, service.getCostService());
         values.put(COLUMN_DOCTOR, service.getDoctor());
+        values.put(COLUMN_TYPE, service.getIdType());
 
         long result = db.insert(TABLE_NAME, null, values);
         db.close();
@@ -73,8 +76,35 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
             @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
 
-            Service service = new Service(id, name, cost, doctor);
+            Service service = new Service(id, name, cost, doctor, idType);
+            servicesList.add(service);
+        }
+
+        cursor.close();
+        db.close();
+
+        return servicesList;
+    }
+
+    public List<Service> getServicesByType(int type) {
+        List<Service> servicesList = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TYPE + " IN ("+type+", 3)";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+
+            Service service = new Service(id, name, cost, doctor, idType);
             servicesList.add(service);
         }
 
@@ -85,12 +115,14 @@ public class DatabaseUtils extends AppCompatActivity {
     }
 
     private void dataSetForService(){
-        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович");
-        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович");
-        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич");
+        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович", 1);
+        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович", 1);
+        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич", 2);
+        Service service4 = new Service(4, "Услуга 4", 500.0, "Васильев Василий Васильевич", 3);
         addService(service1);
         addService(service2);
         addService(service3);
+        addService(service4);
     }
 
     //Добавление питомца

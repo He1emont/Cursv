@@ -5,12 +5,22 @@ public class Service {
     private String NameService;
     private double CostService;
     private String Doctor;
+    private int IdType;
 
-    public Service(int idService, String nameService, double costService, String doctor) {
+    public Service(int idService, String nameService, double costService, String doctor, int idType) {
         IdService = idService;
         NameService = nameService;
         CostService = costService;
         Doctor = doctor;
+        IdType = idType;
+    }
+
+    public int getIdType() {
+        return IdType;
+    }
+
+    public void setIdType(int idType) {
+        IdType = idType;
     }
 
     public int getIdService() {

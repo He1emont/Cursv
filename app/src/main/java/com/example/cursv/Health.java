@@ -23,41 +23,29 @@ public class Health extends DatabaseUtils {
         tvName.setText(getHumanName(humanId));
 
         ImageButton back = findViewById(R.id.imageButton_back5);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        back.setOnClickListener(view -> finish());
 
         ImageButton imagePet1 = findViewById(R.id.imagePet1);
-        imagePet1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Health.this, PetInfoActivity.class);
-                intent.putExtra("idPet1", idPet1);
-                startActivity(intent);
-            }
+        imagePet1.setOnClickListener(view -> {
+            Intent intent = new Intent(Health.this, PetInfoActivity.class);
+            intent.putExtra("idPet1", idPet1);
+            startActivity(intent);
         });
 
         Button next = findViewById(R.id.button_search);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Health.this, search.class);
-                intent.putExtra("humanId", humanId);
-                startActivity(intent);
-            }
+        next.setOnClickListener(view -> {
+            Intent intent = new Intent(Health.this, search.class);
+            intent.putExtra("humanId", humanId);
+            intent.putExtra("typeService", 1);
+            startActivity(intent);
         });
 
         Button next2 = findViewById(R.id.button_search2);
-        next2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Health.this, search.class);
-                intent.putExtra("humanId", humanId);
-                startActivity(intent);
-            }
+        next2.setOnClickListener(view -> {
+            Intent intent = new Intent(Health.this, search.class);
+            intent.putExtra("humanId", humanId);
+            intent.putExtra("typeService", 2);
+            startActivity(intent);
         });
     }
 }

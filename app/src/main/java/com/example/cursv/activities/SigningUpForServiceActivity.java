@@ -160,7 +160,9 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 + signing.getIdHuman() + " Address: "
                 + signing.getAddress()
         );
-        Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServicesActivity.class);
+//        Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServicesActivity.class);
+        Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServiceInfoActivity.class);
+        intent.putExtra("signing", signing);
         startActivity(intent);
     }
 

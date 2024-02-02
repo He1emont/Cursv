@@ -151,6 +151,8 @@
             android:id="@+id/spin_gender"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:popupTheme="@style/SpinnerItemBlackText"
+            android:backgroundTint="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>

@@ -76,7 +76,10 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         }
     }
     private void initListeners(){
-        iBtn_back.setOnClickListener(view -> finish());
+        iBtn_back.setOnClickListener(view -> {
+            Intent intent = new Intent(CustomerServiceInfoActivity.this, CustomerServicesActivity.class);
+            startActivity(intent);
+        });
         btn_send_email.setOnClickListener(view -> sendMessage());
     }
 

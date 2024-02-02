@@ -73,8 +73,8 @@ public class add_pet extends DatabaseUtils {
                 String type = edType.getText().toString();
                 String dateOfBirth = edDateOfBirth.getText().toString();
 
-                int idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
-                Preference.setIntIdHuman("idPet1", idPet1, add_pet.this);
+                long idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
+                Preference.setIntIdHuman("idPet1", (int) idPet1, add_pet.this);
                 startHomeActivity();
             }
         });

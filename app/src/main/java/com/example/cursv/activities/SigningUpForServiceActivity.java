@@ -72,14 +72,12 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
             dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
             dateAndTime.set(Calendar.MINUTE, minute);
             setInitialDateTime();
-            Log.d("SigningUpForService",String.valueOf(dateAndTime.getTimeInMillis()));
         };
         DatePickerDialog.OnDateSetListener d = (view, year, monthOfYear, dayOfMonth) -> {
             dateAndTime.set(Calendar.YEAR, year);
             dateAndTime.set(Calendar.MONTH, monthOfYear);
             dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             setInitialDateTime();
-            Log.d("SigningUpForService",String.valueOf(dateAndTime.getTimeInMillis()));
         };
         ll_ss_date.setOnClickListener(view ->
                 new DatePickerDialog(SigningUpForServiceActivity.this, d,
@@ -113,6 +111,8 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 + signing.getDate().format(formatter) + " service/human: "
                 + signing.getIdService() + "/"
                 + signing.getIdHuman());
+        Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServicesActivity.class);
+        startActivity(intent);
     }
 
     private void setInitialDateTime() {

@@ -84,6 +84,33 @@ public class DatabaseUtils extends AppCompatActivity {
         return signingUpForServices;
     }
 
+    public List<SigningUpForService> getSigningUpForServiceByHumanId(int idHuman) {
+        List<SigningUpForService> signingUpForServices = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+        String query = "SELECT * FROM SigningUpForServices WHERE idHuman = ?";
+        String[] selectionArgs = {String.valueOf(idHuman)};
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+            signingUpForServices.add(signingUpForService);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForServices;
+    }
+
     public SigningUpForService getSigningUpForServiceById(long id) {
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         String query = "SELECT * FROM SigningUpForServices WHERE id = " + id;
@@ -157,6 +184,17 @@ public class DatabaseUtils extends AppCompatActivity {
         return servicesList;
     }
 
+    private void dataSetForService(){
+        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович", 1, 5);
+        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович", 1, 20);
+        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич", 2, 10);
+        Service service4 = new Service(4, "Услуга 4", 500.0, "Васильев Василий Васильевич", 3, 15);
+        addService(service1);
+        addService(service2);
+        addService(service3);
+        addService(service4);
+    }
+
     public List<Service> getServicesByType(int type) {
         List<Service> servicesList = new ArrayList<>();
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
@@ -184,37 +222,27 @@ public class DatabaseUtils extends AppCompatActivity {
         return servicesList;
     }
 
-    private void dataSetForService(){
-        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович", 1, 5);
-        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович", 1, 20);
-        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич", 2, 10);
-        Service service4 = new Service(4, "Услуга 4", 500.0, "Васильев Василий Васильевич", 3, 15);
-        addService(service1);
-        addService(service2);
-        addService(service3);
-        addService(service4);
-    }
-
     //Добавление питомца
-    public int addPet(String namePet, String typePet, String genderPet, String dateOfBirthPet, int idHuman) {
+    public long addPet(String namePet, String typePet, String genderPet, String dateOfBirthPet, int idHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
-        Cursor queryPet = database.rawQuery("SELECT * FROM Pet;", null);
+        ContentValues values = new ContentValues();
+        values.put("Name", namePet);
+        values.put("Type", typePet);
+        values.put("Gender", genderPet);
+        values.put("DateOfBirth", dateOfBirthPet);
+        values.put("IdHuman", idHuman);
 
-        int id = queryPet.getCount();
-
-        database.execSQL("INSERT INTO Pet VALUES " +
-                "(" + id + ", '" + namePet + "', '" + typePet + "', '" + genderPet + "', '" + dateOfBirthPet + "', " + idHuman + ");");
-
-        queryPet.close();
+        long result = database.insert("Pet", null, values);
         database.close();
 
-        return id;
+        return result;
     }
 
     //Получение имени пользователя
     public String getHumanName(int idHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         Cursor queryHuman = database.rawQuery("SELECT * FROM Human;", null);
+
 
         String name = null;
         //Получение полдного имени пользователя

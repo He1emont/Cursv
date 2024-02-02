@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".add_pet">
+    tools:context=".activities.add_pet">
 
     <TextView
         android:id="@+id/textView3"
@@ -87,7 +87,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout4"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
@@ -151,6 +151,8 @@
             android:id="@+id/spin_gender"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:popupTheme="@style/SpinnerItemBlackText"
+            android:backgroundTint="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>

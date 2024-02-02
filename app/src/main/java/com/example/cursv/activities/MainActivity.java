@@ -1,11 +1,14 @@
-package com.example.cursv;
+package com.example.cursv.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.cursv.DatabaseUtils;
+import com.example.cursv.Preference;
+import com.example.cursv.R;
 
 public class MainActivity extends DatabaseUtils {
 

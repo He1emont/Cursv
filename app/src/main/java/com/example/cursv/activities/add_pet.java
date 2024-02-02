@@ -1,6 +1,4 @@
-package com.example.cursv;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.cursv.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -11,13 +9,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.cursv.DatabaseUtils;
+import com.example.cursv.Preference;
+import com.example.cursv.R;
 
 import java.util.Calendar;
 
@@ -72,8 +73,8 @@ public class add_pet extends DatabaseUtils {
                 String type = edType.getText().toString();
                 String dateOfBirth = edDateOfBirth.getText().toString();
 
-                int idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
-                Preference.setIntIdHuman("idPet1", idPet1, add_pet.this);
+                long idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
+                Preference.setIntIdHuman("idPet1", (int) idPet1, add_pet.this);
                 startHomeActivity();
             }
         });

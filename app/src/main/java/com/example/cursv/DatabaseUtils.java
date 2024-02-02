@@ -9,7 +9,10 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cursv.Models.Service;
+import com.example.cursv.Models.SigningUpForService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,26 +23,122 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание или открытие базы данных "ReaDocs"
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         //Создание таблиц БД, если они не существуют
-        database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER, Name TEXT, Cost DECIMAL, Doctor TEXT, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, Address TEXT, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
         dataSetForService();
     }
 
     //Добавление пользователя
-    public int addHuman(String loginHuman, String passwordHuman, String fullNameHuman, String emailHuman, String phoneHuman) {
+    public long addHuman(String loginHuman, String passwordHuman, String fullNameHuman, String emailHuman, String phoneHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
-        Cursor queryHuman = database.rawQuery("SELECT * FROM Human;", null);
-
-        int id = queryHuman.getCount();
-
-        database.execSQL("INSERT INTO Human VALUES " +
-                "(" + id + ", '" + loginHuman + "', '" + passwordHuman + "', '" + fullNameHuman + "', '" + emailHuman + "', '" + phoneHuman + "');");
-
-        queryHuman.close();
+        ContentValues values = new ContentValues();
+        values.put("Login", loginHuman);
+        values.put("Password", passwordHuman);
+        values.put("FullName", fullNameHuman);
+        values.put("Email", emailHuman);
+        values.put("Phone", phoneHuman);
+        long id = database.insert("Human", null, values);
         database.close();
 
         return id;
+    }
+
+    public long addSigningUpForService(SigningUpForService signingUpForService) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        ContentValues values = new ContentValues();
+        values.put("id", signingUpForService.getId());
+        values.put("Date", signingUpForService.getDate().toString());
+        values.put("idService", signingUpForService.getIdService());
+        values.put("idHuman", signingUpForService.getIdHuman());
+        values.put("Address", signingUpForService.getAddress());
+
+
+        db.insert("SigningUpForServices", null, values);
+
+        db.close();
+        return signingUpForService.getId();
+    }
+
+    public List<SigningUpForService> getAllSigning() {
+        List<SigningUpForService> signingUpForServices = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM SigningUpForServices";
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
+            signingUpForServices.add(signingUpForService);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForServices;
+    }
+
+    public List<SigningUpForService> getSigningUpForServiceByHumanId(int idHuman) {
+        List<SigningUpForService> signingUpForServices = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+        String query = "SELECT * FROM SigningUpForServices WHERE idHuman = ?";
+        String[] selectionArgs = {String.valueOf(idHuman)};
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
+            signingUpForServices.add(signingUpForService);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForServices;
+    }
+
+    public SigningUpForService getSigningUpForServiceById(long id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM SigningUpForServices WHERE id = " + id;
+        Cursor cursor = db.rawQuery(query, null);
+
+        SigningUpForService signingUpForService = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
+            @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
+            @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
+
+            // Преобразование строки в LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            LocalDateTime date = LocalDateTime.parse(dateString, formatter);
+
+            signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
+        }
+
+        cursor.close();
+        db.close();
+
+        return signingUpForService;
     }
 
     private static final String TABLE_NAME = "Services";
@@ -47,6 +146,8 @@ public class DatabaseUtils extends AppCompatActivity {
     private static final String COLUMN_NAME = "Name";
     private static final String COLUMN_COST = "Cost";
     private static final String COLUMN_DOCTOR = "Doctor";
+    private static final String COLUMN_TYPE = "idType";
+    private static final String COLUMN_DURATION= "DurationMin";
 
     // Метод для добавления записи Service в таблицу Services
     public long addService(Service service) {
@@ -55,6 +156,8 @@ public class DatabaseUtils extends AppCompatActivity {
         values.put(COLUMN_NAME, service.getNameService());
         values.put(COLUMN_COST, service.getCostService());
         values.put(COLUMN_DOCTOR, service.getDoctor());
+        values.put(COLUMN_TYPE, service.getIdType());
+        values.put(COLUMN_DURATION, service.getDurationMin());
 
         long result = db.insert(TABLE_NAME, null, values);
         db.close();
@@ -73,8 +176,10 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
             @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+            @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
 
-            Service service = new Service(id, name, cost, doctor);
+            Service service = new Service(id, name, cost, doctor, idType, durationMin);
             servicesList.add(service);
         }
 
@@ -85,34 +190,105 @@ public class DatabaseUtils extends AppCompatActivity {
     }
 
     private void dataSetForService(){
-        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович");
-        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович");
-        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич");
+        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович", 1, 5);
+        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович", 1, 20);
+        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич", 2, 10);
+        Service service4 = new Service(4, "Услуга 4", 500.0, "Васильев Василий Васильевич", 3, 15);
         addService(service1);
         addService(service2);
         addService(service3);
+        addService(service4);
+    }
+    public Service getServiceById(int id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        Service service = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+            @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
+
+            service = new Service(id, name, cost, doctor, idType, durationMin);
+        }
+
+        cursor.close();
+        db.close();
+
+        return service;
+    }
+    public List<Service> getServicesByType(int type) {
+        List<Service> servicesList = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TYPE + " IN ("+type+", 3)";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+            @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
+
+            Service service = new Service(id, name, cost, doctor, idType, durationMin);
+            servicesList.add(service);
+        }
+
+        cursor.close();
+        db.close();
+
+        return servicesList;
     }
 
     //Добавление питомца
-    public int addPet(String namePet, String typePet, String genderPet, String dateOfBirthPet, int idHuman) {
+    public long addPet(String namePet, String typePet, String genderPet, String dateOfBirthPet, int idHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
-        Cursor queryPet = database.rawQuery("SELECT * FROM Pet;", null);
+        ContentValues values = new ContentValues();
+        values.put("Name", namePet);
+        values.put("Type", typePet);
+        values.put("Gender", genderPet);
+        values.put("DateOfBirth", dateOfBirthPet);
+        values.put("IdHuman", idHuman);
 
-        int id = queryPet.getCount();
-
-        database.execSQL("INSERT INTO Pet VALUES " +
-                "(" + id + ", '" + namePet + "', '" + typePet + "', '" + genderPet + "', '" + dateOfBirthPet + "', " + idHuman + ");");
-
-        queryPet.close();
+        long result = database.insert("Pet", null, values);
         database.close();
 
-        return id;
+        return result;
+    }
+
+    @SuppressLint("Range")
+    public String getHumanEmailById(int idHuman) {
+        SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT Email FROM Human WHERE id = ?";
+        String[] selectionArgs = {String.valueOf(idHuman)};
+        Cursor cursor = database.rawQuery(query, selectionArgs);
+
+        String email = null;
+
+        if (cursor.moveToFirst()) {
+            email = cursor.getString(cursor.getColumnIndex("Email"));
+        }
+
+        cursor.close();
+        database.close();
+
+        return email;
     }
 
     //Получение имени пользователя
     public String getHumanName(int idHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         Cursor queryHuman = database.rawQuery("SELECT * FROM Human;", null);
+
 
         String name = null;
         //Получение полдного имени пользователя

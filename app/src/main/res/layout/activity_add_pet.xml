@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".add_pet">
+    tools:context=".activities.add_pet">
 
     <TextView
         android:id="@+id/textView3"
@@ -39,25 +39,6 @@
         app:layout_constraintTop_toBottomOf="@+id/edName"
         tools:ignore="TouchTargetSizeCheck" />
 
-    <EditText
-        android:id="@+id/edGender"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:inputType="textPersonName"
-        android:autofillHints=""
-        android:background="@drawable/rounded_button"
-        android:textColor="@color/black"
-        android:hint="Введите гендер совего питомца"
-        android:padding="14dp"
-        android:textColorHint="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edType"
-        tools:ignore="TouchTargetSizeCheck" />
 
     <Button
         android:id="@+id/button_next2"
@@ -104,23 +85,77 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:ignore="TouchTargetSizeCheck" />
 
-    <EditText
-        android:id="@+id/edDateOfBirth"
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+        <TextView
+            android:id="@+id/edDateOfBirth"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_button"
+            android:hint="Выберите дату рождения питомца"
+            android:padding="14dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="18sp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <LinearLayout
+            android:id="@+id/ll_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/rounded_button">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_calendar" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:inputType="date"
-        android:autofillHints=""
         android:background="@drawable/rounded_button"
-        android:hint="Введите дату рождения своего питомца"
-        android:padding="14dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/black"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edGender"
-        tools:ignore="TouchTargetSizeCheck" />
+        app:layout_constraintTop_toBottomOf="@+id/edType">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="14dp"
+            android:text="Пол:"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/spin_gender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:popupTheme="@style/SpinnerItemBlackText"
+            android:backgroundTint="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

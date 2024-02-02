@@ -1,5 +1,6 @@
 package com.example.cursv.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cursv.DatabaseUtils;
-import com.example.cursv.HomeActivity;
-import com.example.cursv.Preference;
 import com.example.cursv.R;
 import com.example.cursv.Models.Service;
-import com.example.cursv.search;
+import com.example.cursv.activities.Health;
+import com.example.cursv.activities.SigningUpForServiceActivity;
+import com.example.cursv.activities.search;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHolder> {
@@ -28,10 +27,13 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
     List<Service> serviceList;
     search context;
     String petName;
-    public ServiceAdapter(List<Service> serviceList, search context, String petName){
+    int humanId, idType;
+    public ServiceAdapter(List<Service> serviceList, search context, String petName, int humanId, int idType){
         this.serviceList = serviceList;
         this.context = context;
         this.petName = petName;
+        this.humanId = humanId;
+        this.idType = idType;
     }
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -57,18 +59,17 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
                             R.layout.bottom_sheet_service_info,
                             context.findViewById(R.id.bottomSheetService)
                     );
-            bottomSheetView.findViewById(R.id.v_dismiss).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    bottomSheetDialog.dismiss();
-                }
-            });
+            bottomSheetView.findViewById(R.id.v_dismiss).setOnClickListener(view1 -> bottomSheetDialog.dismiss());
+            LinearLayout ll_signing = bottomSheetView.findViewById(R.id.ll_signing);
+            ll_signing.setOnClickListener(view1 -> serviceSigning(service));
             TextView tv_bs_service_name = bottomSheetView.findViewById(R.id.tv_bs_service_name);
             TextView tv_bs_service_doctor = bottomSheetView.findViewById(R.id.tv_bs_service_doctor);
             TextView tv_bs_service_pet = bottomSheetView.findViewById(R.id.tv_bs_service_pet);
             TextView tv_bs_service_cost = bottomSheetView.findViewById(R.id.tv_bs_service_cost);
+            TextView tv_bs_service_duration = bottomSheetView.findViewById(R.id.tv_bs_service_duration);
             tv_bs_service_name.setText(service.getNameService());
             tv_bs_service_doctor.setText(service.getDoctor());
+            tv_bs_service_duration.setText(String.valueOf(service.getDurationMin()));
 
             tv_bs_service_pet.setText(petName);
             tv_bs_service_cost.setText(String.valueOf(service.getCostService()));
@@ -83,6 +84,14 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
             }
             bottomSheetDialog.show();
         });
+    }
+
+    private void serviceSigning(Service service) {
+        Intent intent = new Intent(context, SigningUpForServiceActivity.class);
+        intent.putExtra("idType", idType);
+        intent.putExtra("humanId", humanId);
+        intent.putExtra("service", service);
+        context.startActivity(intent);
     }
 
     @Override

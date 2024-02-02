@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -125,6 +126,21 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
                 ZoneId.systemDefault()
         );
+
+        int hour = localDateTime.getHour();
+        int minute = localDateTime.getMinute();
+
+        LocalTime startTime = LocalTime.of(7, 59);  // Начальное время
+        LocalTime endTime = LocalTime.of(19, 0);   // Конечное время
+
+        LocalTime checkTime = LocalTime.of(hour, minute);
+
+        if (checkTime.isAfter(startTime) && checkTime.isBefore(endTime)) {
+            // Время больше 8:00 утра и меньше 19:00 вечера
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Мы работаем с 8:00 до 19:00", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         List<SigningUpForService> existingServices = getAllSigning();

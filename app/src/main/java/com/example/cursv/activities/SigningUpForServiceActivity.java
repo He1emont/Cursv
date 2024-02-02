@@ -125,10 +125,33 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
                 ZoneId.systemDefault()
         );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        List<SigningUpForService> existingServices = getAllSigning();
+        long selectedTimeMillis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        for (SigningUpForService existingService : existingServices) {
+            if(service.getIdService()==existingService.getIdService()){
+                LocalDateTime existingStart = existingService.getDate();
+                LocalDateTime existingEnd = existingStart.plusMinutes(getServiceById(existingService.getIdService()).getDurationMin());
+
+                long existingStartMillis = existingStart.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                long existingEndMillis = existingEnd.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+                Log.d("existingStart", existingStart.format(formatter));
+                Log.d("existingEnd", existingEnd.format(formatter));
+
+                if (selectedTimeMillis > existingStartMillis && selectedTimeMillis < existingEndMillis) {
+                    // Время пересекается с существующей записью, выводим сообщение и завершаем метод
+                    Snackbar.make(findViewById(android.R.id.content), "Выбранное время уже занято." +
+                            "\nВыберите время раньше, либо позднее:\n" +
+                            existingStart.format(formatter) + "-" + existingEnd.format(formatter), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        }
+
         SigningUpForService signingUpForService = new SigningUpForService(dateAndTime.getTimeInMillis(), localDateTime, service.getIdService(), humanId, address);
         long id = addSigningUpForService(signingUpForService);
-        Log.d("SigningUpForService",String.valueOf(id));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         SigningUpForService signing = getSigningUpForServiceById(id);
         Log.d("SigningUpForService","id: "
                 + signing.getId() + " Date: "

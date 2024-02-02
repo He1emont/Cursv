@@ -265,6 +265,25 @@ public class DatabaseUtils extends AppCompatActivity {
         return result;
     }
 
+    @SuppressLint("Range")
+    public String getHumanEmailById(int idHuman) {
+        SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT Email FROM Human WHERE id = ?";
+        String[] selectionArgs = {String.valueOf(idHuman)};
+        Cursor cursor = database.rawQuery(query, selectionArgs);
+
+        String email = null;
+
+        if (cursor.moveToFirst()) {
+            email = cursor.getString(cursor.getColumnIndex("Email"));
+        }
+
+        cursor.close();
+        database.close();
+
+        return email;
+    }
+
     //Получение имени пользователя
     public String getHumanName(int idHuman) {
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);

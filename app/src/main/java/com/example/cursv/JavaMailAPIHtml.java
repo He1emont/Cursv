@@ -61,7 +61,7 @@ public class JavaMailAPIHtml extends AsyncTask<Void,Void,Boolean> {
         if (success) {
             Toast.makeText(mContext, "Чек отправлен", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(mContext, "Произошла ошибка. Обратитесь к официанту", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Произошла ошибка...", Toast.LENGTH_SHORT).show();
         }
     }
 

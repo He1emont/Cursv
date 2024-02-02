@@ -1,18 +1,29 @@
 package com.example.cursv.Models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class SigningUpForService {
+public class SigningUpForService implements Serializable {
     private long id;
     private LocalDateTime date;
     private int idService;
     private int idHuman;
+    private String address;
 
-    public SigningUpForService(long id, LocalDateTime date, int idService, int idHuman) {
+    public SigningUpForService(long id, LocalDateTime date, int idService, int idHuman, String address) {
         this.id = id;
         this.date = date;
         this.idService = idService;
         this.idHuman = idHuman;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getIdHuman() {
@@ -27,7 +38,7 @@ public class SigningUpForService {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

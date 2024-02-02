@@ -26,7 +26,7 @@ public class DatabaseUtils extends AppCompatActivity {
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, Address TEXT, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
         dataSetForService();
     }
 
@@ -52,6 +52,8 @@ public class DatabaseUtils extends AppCompatActivity {
         values.put("Date", signingUpForService.getDate().toString());
         values.put("idService", signingUpForService.getIdService());
         values.put("idHuman", signingUpForService.getIdHuman());
+        values.put("Address", signingUpForService.getAddress());
+
 
         db.insert("SigningUpForServices", null, values);
 
@@ -71,10 +73,11 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
             @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
             @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
             LocalDateTime date = LocalDateTime.parse(dateString, formatter);
-            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
             signingUpForServices.add(signingUpForService);
         }
 
@@ -98,10 +101,11 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
             @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
             @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
             LocalDateTime date = LocalDateTime.parse(dateString, formatter);
-            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+            SigningUpForService signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
             signingUpForServices.add(signingUpForService);
         }
 
@@ -122,12 +126,13 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") long serviceId = cursor.getLong(cursor.getColumnIndex("idService"));
             @SuppressLint("Range") long humanId = cursor.getLong(cursor.getColumnIndex("idHuman"));
             @SuppressLint("Range") String dateString = cursor.getString(cursor.getColumnIndex("Date"));
+            @SuppressLint("Range") String address = cursor.getString(cursor.getColumnIndex("Address"));
 
             // Преобразование строки в LocalDateTime
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
             LocalDateTime date = LocalDateTime.parse(dateString, formatter);
 
-            signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId);
+            signingUpForService = new SigningUpForService(id, date, (int) serviceId, (int) humanId, address);
         }
 
         cursor.close();

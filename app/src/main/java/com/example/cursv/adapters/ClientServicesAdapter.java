@@ -1,5 +1,6 @@
 package com.example.cursv.adapters;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cursv.Models.SigningUpForService;
 import com.example.cursv.R;
+import com.example.cursv.activities.CustomerServiceInfoActivity;
 import com.example.cursv.activities.CustomerServicesActivity;
 
 import java.time.format.DateTimeFormatter;
@@ -41,6 +43,7 @@ public class ClientServicesAdapter extends RecyclerView.Adapter<ClientServicesAd
         viewHolder.tv_id_signing.setText(String.valueOf(signingUpForService.getId()));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         viewHolder.tv_datetime_signing.setText(signingUpForService.getDate().format(formatter));
+        viewHolder.cl_client_service.setOnClickListener(view -> startClientServiceInfo(signingUpForService));
     }
     @Override
     public int getItemCount() {
@@ -57,5 +60,10 @@ public class ClientServicesAdapter extends RecyclerView.Adapter<ClientServicesAd
             tv_datetime_signing = itemView.findViewById(R.id.tv_datetime_signing);
             cl_client_service = itemView.findViewById(R.id.cl_client_service);
         }
+    }
+    private void startClientServiceInfo(SigningUpForService signing){
+        Intent intent = new Intent(context, CustomerServiceInfoActivity.class);
+        intent.putExtra("signing", signing);
+        context.startActivity(intent);
     }
 }

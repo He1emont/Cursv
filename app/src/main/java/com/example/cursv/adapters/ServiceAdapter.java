@@ -27,12 +27,13 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
     List<Service> serviceList;
     search context;
     String petName;
-    int humanId;
-    public ServiceAdapter(List<Service> serviceList, search context, String petName, int humanId){
+    int humanId, idType;
+    public ServiceAdapter(List<Service> serviceList, search context, String petName, int humanId, int idType){
         this.serviceList = serviceList;
         this.context = context;
         this.petName = petName;
         this.humanId = humanId;
+        this.idType = idType;
     }
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -87,6 +88,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
 
     private void serviceSigning(Service service) {
         Intent intent = new Intent(context, SigningUpForServiceActivity.class);
+        intent.putExtra("idType", idType);
         intent.putExtra("humanId", humanId);
         intent.putExtra("service", service);
         context.startActivity(intent);

@@ -22,13 +22,14 @@ public class search extends DatabaseUtils {
 
     private RecyclerView rv_services;
     private List<Service> services;
+    private int idType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
         int humanId = getIntent().getIntExtra("humanId", 0);
-        int idType = getIntent().getIntExtra("typeService", 0);
+        idType = getIntent().getIntExtra("typeService", 0);
 
         services = getServicesByType(idType);
 //        services = getAllServices();
@@ -54,7 +55,7 @@ public class search extends DatabaseUtils {
     @SuppressLint("NotifyDataSetChanged")
     private void initializeAdapter(int humanId){
         ArrayList<String> infoPet = getPetInfo(Preference.getIntIdHuman("idPet1", search.this));
-        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this, infoPet.get(0), humanId);
+        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this, infoPet.get(0), humanId, idType);
         adapterMenu.notifyDataSetChanged();
         rv_services.setAdapter(adapterMenu);
     }

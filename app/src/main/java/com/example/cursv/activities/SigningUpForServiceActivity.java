@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.example.cursv.DatabaseUtils;
 import com.example.cursv.Models.Service;
 import com.example.cursv.Models.SigningUpForService;
 import com.example.cursv.R;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -33,8 +36,10 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
     private LinearLayout ll_ss_date, ll_ss_time;
     private Service service;
     private Button btn_signing_up;
-    private int humanId;
+    private int humanId, idType;
     private Calendar dateAndTime = Calendar.getInstance();
+    private EditText et_Address;
+    private String address;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,7 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
         if (intent != null) {
             service = (Service) intent.getSerializableExtra("service");
             humanId = getIntent().getIntExtra("humanId", 0);
+            idType = getIntent().getIntExtra("idType", 0);//1 - в клинике, 2 - дома
         }
         Log.d("UserName", getHumanName(humanId));
         initViews();
@@ -65,6 +71,10 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
         ll_ss_date = findViewById(R.id.ll_ss_date);
         ll_ss_time = findViewById(R.id.ll_ss_time);
         btn_signing_up = findViewById(R.id.btn_signing_up);
+        et_Address = findViewById(R.id.et_Address);
+        if (idType==1){
+            et_Address.setVisibility(View.GONE);
+        }
     }
 
     private void initListeners(){
@@ -97,11 +107,25 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
     }
 
     private void orderingService() {
+        if(idType==1){
+            address = "ул. Вавилова 65";
+        }
+        else{
+            address = et_Address.getText().toString();
+            if(address.isEmpty()){
+                Snackbar.make(findViewById(android.R.id.content), "Введите адрес", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        if(tv_date_time.getText().toString().isEmpty()){
+            Snackbar.make(findViewById(android.R.id.content), "Выберите дату", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
         LocalDateTime localDateTime = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
                 ZoneId.systemDefault()
         );
-        SigningUpForService signingUpForService = new SigningUpForService(dateAndTime.getTimeInMillis(), localDateTime, service.getIdService(), humanId);
+        SigningUpForService signingUpForService = new SigningUpForService(dateAndTime.getTimeInMillis(), localDateTime, service.getIdService(), humanId, address);
         long id = addSigningUpForService(signingUpForService);
         Log.d("SigningUpForService",String.valueOf(id));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -110,7 +134,9 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 + signing.getId() + " Date: "
                 + signing.getDate().format(formatter) + " service/human: "
                 + signing.getIdService() + "/"
-                + signing.getIdHuman());
+                + signing.getIdHuman() + " Address: "
+                + signing.getAddress()
+        );
         Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServicesActivity.class);
         startActivity(intent);
     }

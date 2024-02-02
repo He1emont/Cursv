@@ -199,7 +199,29 @@ public class DatabaseUtils extends AppCompatActivity {
         addService(service3);
         addService(service4);
     }
+    public Service getServiceById(int id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
 
+        Service service = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+            @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
+
+            service = new Service(id, name, cost, doctor, idType, durationMin);
+        }
+
+        cursor.close();
+        db.close();
+
+        return service;
+    }
     public List<Service> getServicesByType(int type) {
         List<Service> servicesList = new ArrayList<>();
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);

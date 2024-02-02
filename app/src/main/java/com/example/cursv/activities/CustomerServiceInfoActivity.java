@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.cursv.DatabaseUtils;
 import com.example.cursv.Models.Service;
 import com.example.cursv.Models.SigningUpForService;
 import com.example.cursv.R;
 
 import java.time.format.DateTimeFormatter;
 
-public class CustomerServiceInfoActivity extends AppCompatActivity {
+public class CustomerServiceInfoActivity extends DatabaseUtils {
 
     private ImageButton iBtn_back;
     private TextView tv_id_service, tv_service_name,
@@ -21,6 +22,7 @@ public class CustomerServiceInfoActivity extends AppCompatActivity {
             tv_signing_date_time, tv_signing_address,
             tv_service_cost;
     private SigningUpForService signing;
+    private Service service;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +49,19 @@ public class CustomerServiceInfoActivity extends AppCompatActivity {
 
     private void initData(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        if(signing==null){
+            return;
+        }
         tv_id_service.setText(String.valueOf(signing.getId()));
         tv_signing_date_time.setText(signing.getDate().format(formatter));
         tv_signing_address.setText(signing.getAddress());
+        service = getServiceById(signing.getIdService());
+        if(service!=null){
+            tv_service_name.setText(service.getNameService());
+            tv_service_duration.setText(String.valueOf(service.getDurationMin()));
+            tv_service_doc.setText(service.getDoctor());
+            tv_service_cost.setText(String.valueOf(service.getCostService()));
+        }
     }
     private void initListeners(){
         iBtn_back.setOnClickListener(view -> finish());

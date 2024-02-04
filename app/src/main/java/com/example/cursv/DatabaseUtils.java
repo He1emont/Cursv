@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cursv.Models.Service;
 import com.example.cursv.Models.SigningUpForService;
+import com.example.cursv.Models.Veterinarians;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,9 +26,65 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание таблиц БД, если они не существуют
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, Doctor TEXT, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Veterinarians (id INTEGER PRIMARY KEY AUTOINCREMENT, FIO TEXT, Experience INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, idDoctor INTEGER, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, Address TEXT, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
+        dataSetForVeterinarians();
         dataSetForService();
+    }
+
+    public long addVeterinarians(Veterinarians veterinarians) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        ContentValues values = new ContentValues();
+        values.put("FIO", veterinarians.getFio());
+        values.put("Experience", veterinarians.getExperience());
+
+        long result = db.insert("Veterinarians", null, values);
+        db.close();
+        return result;
+    }
+
+    public Veterinarians getVeterinarianById(int id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM Veterinarians WHERE  id = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        Veterinarians Veterinarian = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String fio = cursor.getString(cursor.getColumnIndex("FIO"));
+            @SuppressLint("Range") int experience = cursor.getInt(cursor.getColumnIndex("Experience"));
+
+            Veterinarian = new Veterinarians(id, fio, experience);
+        }
+
+        cursor.close();
+        db.close();
+
+        return Veterinarian;
+    }
+
+    public List<Veterinarians> getAllVeterinarians() {
+        List<Veterinarians> veterinarians = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM Veterinarians";
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") String fio = cursor.getString(cursor.getColumnIndex("FIO"));
+            @SuppressLint("Range") int experience = cursor.getInt(cursor.getColumnIndex("Experience"));
+
+            Veterinarians veterinarian = new Veterinarians(id, fio, experience);
+            veterinarians.add(veterinarian);
+        }
+
+        cursor.close();
+        db.close();
+
+        return veterinarians;
     }
 
     //Добавление пользователя
@@ -145,7 +202,7 @@ public class DatabaseUtils extends AppCompatActivity {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "Name";
     private static final String COLUMN_COST = "Cost";
-    private static final String COLUMN_DOCTOR = "Doctor";
+    private static final String COLUMN_DOCTOR = "idDoctor";
     private static final String COLUMN_TYPE = "idType";
     private static final String COLUMN_DURATION= "DurationMin";
 
@@ -155,7 +212,7 @@ public class DatabaseUtils extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, service.getNameService());
         values.put(COLUMN_COST, service.getCostService());
-        values.put(COLUMN_DOCTOR, service.getDoctor());
+        values.put(COLUMN_DOCTOR, service.getIdDoctor());
         values.put(COLUMN_TYPE, service.getIdType());
         values.put(COLUMN_DURATION, service.getDurationMin());
 
@@ -175,7 +232,7 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
             @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
-            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int doctor = cursor.getInt(cursor.getColumnIndex(COLUMN_DOCTOR));
             @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
             @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
 
@@ -190,15 +247,29 @@ public class DatabaseUtils extends AppCompatActivity {
     }
 
     private void dataSetForService(){
-        Service service1 = new Service(1, "Услуга 1", 100.0, "Иванов Иван Иванович", 1, 5);
-        Service service2 = new Service(2, "Услуга 2", 2000.0, "Петров Петр Петрович", 1, 20);
-        Service service3 = new Service(3, "Услуга 3", 300.0, "Васильев Василий Васильевич", 2, 10);
-        Service service4 = new Service(4, "Услуга 4", 500.0, "Васильев Василий Васильевич", 3, 15);
+        Service service1 = new Service(1, "Услуга 1", 100.0, 1, 1, 5);
+        Service service2 = new Service(2, "Услуга 2", 2000.0, 2, 1, 20);
+        Service service3 = new Service(3, "Услуга 3", 300.0, 5, 2, 10);
+        Service service4 = new Service(4, "Услуга 4", 500.0, 4, 3, 15);
         addService(service1);
         addService(service2);
         addService(service3);
         addService(service4);
     }
+
+    private void dataSetForVeterinarians(){
+        Veterinarians veterinarian1 = new Veterinarians(1, "Иванов Иван Иванович", 5);
+        Veterinarians veterinarian2 = new Veterinarians(1, "Петров Петр Петрович", 3);
+        Veterinarians veterinarian3 = new Veterinarians(1, "Васильев Василий Васильевич", 2);
+        Veterinarians veterinarian4 = new Veterinarians(1, "Иваннько Евгений Андреевич", 8);
+        Veterinarians veterinarian5 = new Veterinarians(1, "Андреев Андрей Петрович", 1);
+        addVeterinarians(veterinarian1);
+        addVeterinarians(veterinarian2);
+        addVeterinarians(veterinarian3);
+        addVeterinarians(veterinarian4);
+        addVeterinarians(veterinarian5);
+    }
+
     public Service getServiceById(int id) {
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = ?";
@@ -210,7 +281,7 @@ public class DatabaseUtils extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
-            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int doctor = cursor.getInt(cursor.getColumnIndex(COLUMN_DOCTOR));
             @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
             @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
 
@@ -235,7 +306,7 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
             @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
-            @SuppressLint("Range") String doctor = cursor.getString(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int doctor = cursor.getInt(cursor.getColumnIndex(COLUMN_DOCTOR));
             @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
             @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
 

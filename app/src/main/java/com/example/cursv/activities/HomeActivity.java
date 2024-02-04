@@ -14,7 +14,7 @@ import com.example.cursv.R;
 public class HomeActivity extends DatabaseUtils {
 
     private ImageButton btn_logOut, imagePet1;
-    private Button btn_services, next;
+    private Button btn_services, next, btn_vet;
     TextView textHumanName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class HomeActivity extends DatabaseUtils {
         textHumanName = findViewById(R.id.textHumanName);
         imagePet1 = findViewById(R.id.imagePet1);
         next = findViewById(R.id.button_health);
+        btn_vet = findViewById(R.id.btn_vet);
     }
 
     private void initListeners(int idPet1, int humanId){
@@ -64,6 +65,10 @@ public class HomeActivity extends DatabaseUtils {
         });
         btn_services.setOnClickListener(view -> {
             Intent intent = new Intent(HomeActivity.this, CustomerServicesActivity.class);
+            startActivity(intent);
+        });
+        btn_vet.setOnClickListener(view -> {
+            Intent intent = new Intent(HomeActivity.this, VeterinariansActivity.class);
             startActivity(intent);
         });
     }

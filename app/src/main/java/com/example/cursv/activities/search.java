@@ -37,7 +37,7 @@ public class search extends DatabaseUtils {
             Log.d("Service", "ID: " + service.getIdService() + ", Name: "
                     + service.getNameService() + ", Cost: "
                     + service.getCostService() + ", Doc: "
-                    + service.getDoctor() + ", Dur: "
+                    + getVeterinarianById(service.getIdDoctor()).getFio() + ", Dur: "
                     + service.getDurationMin());
         }
         rv_services = findViewById(R.id.rv_services);

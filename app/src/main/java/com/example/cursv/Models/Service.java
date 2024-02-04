@@ -1,20 +1,22 @@
 package com.example.cursv.Models;
 
+import com.example.cursv.DatabaseUtils;
+
 import java.io.Serializable;
 
 public class Service implements Serializable {
     private int IdService;
     private String NameService;
     private double CostService;
-    private String Doctor;
+    private int IdDoctor;
     private int IdType;
     private int DurationMin;
 
-    public Service(int idService, String nameService, double costService, String doctor, int idType, int durationMin) {
+    public Service(int idService, String nameService, double costService, int idDoctor, int idType, int durationMin) {
         IdService = idService;
         NameService = nameService;
         CostService = costService;
-        Doctor = doctor;
+        IdDoctor = idDoctor;
         IdType = idType;
         DurationMin = durationMin;
     }
@@ -59,11 +61,12 @@ public class Service implements Serializable {
         CostService = costService;
     }
 
-    public String getDoctor() {
-        return Doctor;
+    public int getIdDoctor() {
+        return IdDoctor;
     }
 
-    public void setDoctor(String doctor) {
-        Doctor = doctor;
+    public void setIdDoctor(int idDoctor) {
+        IdDoctor = idDoctor;
     }
+
 }

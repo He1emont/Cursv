@@ -68,7 +68,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
             TextView tv_bs_service_cost = bottomSheetView.findViewById(R.id.tv_bs_service_cost);
             TextView tv_bs_service_duration = bottomSheetView.findViewById(R.id.tv_bs_service_duration);
             tv_bs_service_name.setText(service.getNameService());
-            tv_bs_service_doctor.setText(service.getDoctor());
+            tv_bs_service_doctor.setText(context.getVeterinarianById(service.getIdDoctor()).getFio());
             tv_bs_service_duration.setText(String.valueOf(service.getDurationMin()));
 
             tv_bs_service_pet.setText(petName);

@@ -44,33 +44,55 @@
         app:layout_constraintVertical_bias="0.302"
         app:srcCompat="@drawable/add_more" />
 
-    <Button
-        android:id="@+id/button_health"
-        android:layout_width="250dp"
-        android:layout_height="80dp"
-        android:background="@color/white"
-        android:drawableLeft="@drawable/pablo_861_1"
-        android:text="Лечение"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.200" />
+        app:layout_constraintVertical_bias="0.200"
+        android:padding="10dp">
 
-    <Button
-        android:id="@+id/btn_services"
-        android:layout_width="250dp"
-        android:layout_height="80dp"
-        android:background="@color/white"
-        android:drawableLeft="@drawable/ic_registration"
-        android:text="Записи"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_health"
-        app:layout_constraintVertical_bias="0.233" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_vet"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_button"
+                android:drawableLeft="@drawable/ic_doctor"
+                android:text="Ветеринары"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
+
+            <Button
+                android:id="@+id/button_health"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_button"
+                android:drawableLeft="@drawable/ic_medicine_treatment"
+                android:text="Лечение"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
+
+            <Button
+                android:id="@+id/btn_services"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_button"
+                android:drawableLeft="@drawable/ic_registration"
+                android:text="Записи"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+    </ScrollView>
 
     <ImageButton
         android:id="@+id/imageButton9"

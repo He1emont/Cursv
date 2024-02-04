@@ -71,7 +71,7 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         if(service!=null){
             tv_service_name.setText(service.getNameService());
             tv_service_duration.setText(String.valueOf(service.getDurationMin()));
-            tv_service_doc.setText(service.getDoctor());
+            tv_service_doc.setText(getVeterinarianById(service.getIdDoctor()).getFio());
             tv_service_cost.setText(String.valueOf(service.getCostService()));
         }
     }
@@ -91,7 +91,7 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         StringBuilder htmlBody = generateHtmlBody(String.valueOf(signing.getId()),
                 service.getNameService(), signing.getDate().format(formatter),
                 String.valueOf(service.getCostService()), String.valueOf(service.getDurationMin()),
-                service.getDoctor(), signing.getAddress());
+                getVeterinarianById(service.getIdDoctor()).getFio(), signing.getAddress());
 
         ByteArrayOutputStream logoOutputStream = new ByteArrayOutputStream();
         Bitmap bitmapLogo = BitmapFactory.decodeResource(CustomerServiceInfoActivity.this.getResources(), R.mipmap.ic_launcher_foreground);

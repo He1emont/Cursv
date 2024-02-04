@@ -27,7 +27,7 @@ public class DatabaseUtils extends AppCompatActivity {
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Veterinarians (id INTEGER PRIMARY KEY AUTOINCREMENT, FIO TEXT, Experience INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, idDoctor INTEGER, idType INTEGER, DurationMin INTEGER, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, idDoctor INTEGER, idType INTEGER, DurationMin INTEGER,FOREIGN KEY (idDoctor) REFERENCES Veterinarians(id), UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, Address TEXT, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
         dataSetForVeterinarians();
         dataSetForService();
@@ -220,6 +220,33 @@ public class DatabaseUtils extends AppCompatActivity {
         db.close();
         return result;
     }
+
+    public List<Service> getServicesByDoctorId(int idDoctor) {
+        List<Service> servicesList = new ArrayList<>();
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_DOCTOR + " = ?";
+        String[] selectionArgs = {String.valueOf(idDoctor)};
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            @SuppressLint("Range") double cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST));
+            @SuppressLint("Range") int doctor = cursor.getInt(cursor.getColumnIndex(COLUMN_DOCTOR));
+            @SuppressLint("Range") int idType = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+            @SuppressLint("Range") int durationMin = cursor.getInt(cursor.getColumnIndex(COLUMN_DURATION));
+
+            Service service = new Service(id, name, cost, doctor, idType, durationMin);
+            servicesList.add(service);
+        }
+
+        cursor.close();
+        db.close();
+
+        return servicesList;
+    }
     // Метод для получения списка всех услуг из таблицы Services
     public List<Service> getAllServices() {
         List<Service> servicesList = new ArrayList<>();
@@ -250,11 +277,13 @@ public class DatabaseUtils extends AppCompatActivity {
         Service service1 = new Service(1, "Услуга 1", 100.0, 1, 1, 5);
         Service service2 = new Service(2, "Услуга 2", 2000.0, 2, 1, 20);
         Service service3 = new Service(3, "Услуга 3", 300.0, 5, 2, 10);
-        Service service4 = new Service(4, "Услуга 4", 500.0, 4, 3, 15);
+        Service service4 = new Service(4, "Услуга 4", 500.0, 4, 1, 15);
+        Service service5 = new Service(5, "Услуга 5", 800.0, 3, 2, 15);
         addService(service1);
         addService(service2);
         addService(service3);
         addService(service4);
+        addService(service5);
     }
 
     private void dataSetForVeterinarians(){
@@ -298,7 +327,7 @@ public class DatabaseUtils extends AppCompatActivity {
         SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
 
 
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TYPE + " IN ("+type+", 3)";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TYPE + " IN ("+type+")";
 
         Cursor cursor = db.rawQuery(query, null);
 

@@ -1,6 +1,8 @@
 package com.example.cursv.Models;
 
-public class Veterinarians {
+import java.io.Serializable;
+
+public class Veterinarians implements Serializable {
     private int id;
     private String fio;
     private int experience;

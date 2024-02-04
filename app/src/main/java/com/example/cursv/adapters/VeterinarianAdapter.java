@@ -1,5 +1,6 @@
 package com.example.cursv.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cursv.Models.SigningUpForService;
 import com.example.cursv.Models.Veterinarians;
 import com.example.cursv.R;
+import com.example.cursv.activities.VeterinarianInfoActivity;
 import com.example.cursv.activities.VeterinariansActivity;
 
 import java.time.format.DateTimeFormatter;
@@ -41,8 +43,14 @@ public class VeterinarianAdapter extends RecyclerView.Adapter<VeterinarianAdapte
         Veterinarians veterinarian = veterinariansList.get(position);
         viewHolder.tv_fio.setText(veterinarian.getFio());
         viewHolder.tv_experience.setText(String.valueOf(veterinarian.getExperience()));
-//        viewHolder.cl_veterinarian.setOnClickListener(view -> startClientServiceInfo());
+        viewHolder.cl_veterinarian.setOnClickListener(view -> startVetServiceInfo(veterinarian));
         viewHolder.tv_year.setText(getYearText(veterinarian.getExperience()));
+    }
+
+    private void startVetServiceInfo(Veterinarians veterinarian) {
+        Intent intent = new Intent(context, VeterinarianInfoActivity.class);
+        intent.putExtra("IdDoctor", veterinarian);
+        context.startActivity(intent);
     }
 
     private String getYearText(int experience) {

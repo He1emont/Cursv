@@ -42,6 +42,7 @@ public class VeterinariansActivity extends DatabaseUtils {
             rl_not_found.setVisibility(View.VISIBLE);
         }
         iBtn_back = findViewById(R.id.iBtn_back);
+        iBtn_back.setOnClickListener(view -> finish());
     }
 
     @SuppressLint("NotifyDataSetChanged")

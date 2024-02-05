@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -176,6 +177,11 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
                 ZoneId.systemDefault()
         );
+
+        if (localDateTime.truncatedTo(ChronoUnit.MINUTES).isBefore(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))) {
+            Snackbar.make(findViewById(android.R.id.content), "Выберите существующие дату и время", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
         int hour = localDateTime.getHour();
         int minute = localDateTime.getMinute();

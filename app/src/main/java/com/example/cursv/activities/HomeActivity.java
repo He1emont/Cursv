@@ -13,8 +13,8 @@ import com.example.cursv.R;
 
 public class HomeActivity extends DatabaseUtils {
 
-    private ImageButton btn_logOut, imagePet1;
-    private Button btn_services, next;
+    private ImageButton btn_logOut, imagePet1, btn_profile;
+    private Button btn_services, next, btn_vet;
     TextView textHumanName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +33,12 @@ public class HomeActivity extends DatabaseUtils {
 
     private void initViews(){
         btn_services = findViewById(R.id.btn_services);
+        btn_profile = findViewById(R.id.btn_profile);
         btn_logOut = findViewById(R.id.btn_logOut);
         textHumanName = findViewById(R.id.textHumanName);
         imagePet1 = findViewById(R.id.imagePet1);
         next = findViewById(R.id.button_health);
+        btn_vet = findViewById(R.id.btn_vet);
     }
 
     private void initListeners(int idPet1, int humanId){
@@ -63,9 +65,19 @@ public class HomeActivity extends DatabaseUtils {
                     .show();
         });
         btn_services.setOnClickListener(view -> {
-            Intent intent = new Intent(HomeActivity.this, CustomerServicesActivity.class);
-            startActivity(intent);
+            next(CustomerServicesActivity.class);
         });
+        btn_vet.setOnClickListener(view -> {
+            next(VeterinariansActivity.class);
+        });
+        btn_profile.setOnClickListener(view -> {
+            next(ProfileActivity.class);
+        });
+    }
+
+    private void next(Class newClass){
+        Intent intent = new Intent(HomeActivity.this, newClass);
+        startActivity(intent);
     }
     private void logOut() {
         Preference.setAuthSettings("login", "", HomeActivity.this);

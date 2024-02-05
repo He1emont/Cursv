@@ -71,7 +71,7 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         if(service!=null){
             tv_service_name.setText(service.getNameService());
             tv_service_duration.setText(String.valueOf(service.getDurationMin()));
-            tv_service_doc.setText(service.getDoctor());
+            tv_service_doc.setText(getVeterinarianById(service.getIdDoctor()).getFio());
             tv_service_cost.setText(String.valueOf(service.getCostService()));
         }
     }
@@ -91,7 +91,7 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         StringBuilder htmlBody = generateHtmlBody(String.valueOf(signing.getId()),
                 service.getNameService(), signing.getDate().format(formatter),
                 String.valueOf(service.getCostService()), String.valueOf(service.getDurationMin()),
-                service.getDoctor(), signing.getAddress());
+                getVeterinarianById(service.getIdDoctor()).getFio(), signing.getAddress());
 
         ByteArrayOutputStream logoOutputStream = new ByteArrayOutputStream();
         Bitmap bitmapLogo = BitmapFactory.decodeResource(CustomerServiceInfoActivity.this.getResources(), R.mipmap.ic_launcher_foreground);
@@ -107,7 +107,6 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         StringBuilder htmlBody = new StringBuilder();
         htmlBody.append("<html><body>");
         htmlBody.append("<table style=\"border: 1px solid gray; padding: 10px;\">");
-        // Верхняя часть с заголовком и логотипом
         htmlBody.append("<tr>");
         htmlBody.append("<td colspan=\"3\" style=\"text-align: center;\">");
         htmlBody.append("<img src='cid:logo' alt='logo' width=\"120\" height=\"130\"/>"); // Добавление логотипа
@@ -118,10 +117,9 @@ public class CustomerServiceInfoActivity extends DatabaseUtils {
         htmlBody.append("<tr><td><p>Услуга: ").append(serviceName).append("</p></td></tr>");
         htmlBody.append("<tr><td><p>Длительность: ").append(duration).append(" мин.").append("</p></td></tr>");
         htmlBody.append("<tr><td><p>Врач: ").append(doc).append("</p></td></tr>");
-        htmlBody.append("<tr><td><p>Время: ").append(dateTime).append("</p></td></tr>");
+        htmlBody.append("<tr><td><p>Запись на: ").append(dateTime).append("</p></td></tr>");
         htmlBody.append("<tr><td><p>Адрес: ").append(address).append("</p></td></tr>");
         htmlBody.append("<tr><td><p>Стоимость: ").append(cost).append(" руб.").append("</p></td></tr>");
-        // Таблица с блюдами
         return htmlBody;
     }
 

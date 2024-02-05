@@ -20,6 +20,9 @@ import com.example.cursv.DatabaseUtils;
 import com.example.cursv.Preference;
 import com.example.cursv.R;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 
 public class add_pet extends DatabaseUtils {
@@ -73,9 +76,20 @@ public class add_pet extends DatabaseUtils {
                 String type = edType.getText().toString();
                 String dateOfBirth = edDateOfBirth.getText().toString();
 
-                long idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
-                Preference.setIntIdHuman("idPet1", (int) idPet1, add_pet.this);
-                startHomeActivity();
+                // Проверка, что выбранная дата не больше текущей даты
+                LocalDateTime selectedDateTime = LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(dateAndTime.getTimeInMillis()),
+                        ZoneId.systemDefault()
+                );
+
+                if (selectedDateTime.isBefore(LocalDateTime.now())) {
+                    long idPet1 = addPet(name, type, gender, dateOfBirth, humanId);
+                    Preference.setIntIdHuman("idPet1", (int) idPet1, add_pet.this);
+                    startHomeActivity();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "Выберите настоящую дату рождения", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         DatePickerDialog.OnDateSetListener d = (view, year, monthOfYear, dayOfMonth) -> {

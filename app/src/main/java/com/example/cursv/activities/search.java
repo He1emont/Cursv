@@ -37,7 +37,7 @@ public class search extends DatabaseUtils {
             Log.d("Service", "ID: " + service.getIdService() + ", Name: "
                     + service.getNameService() + ", Cost: "
                     + service.getCostService() + ", Doc: "
-                    + service.getDoctor() + ", Dur: "
+                    + getVeterinarianById(service.getIdDoctor()).getFio() + ", Dur: "
                     + service.getDurationMin());
         }
         rv_services = findViewById(R.id.rv_services);
@@ -55,7 +55,7 @@ public class search extends DatabaseUtils {
     @SuppressLint("NotifyDataSetChanged")
     private void initializeAdapter(int humanId){
         ArrayList<String> infoPet = getPetInfo(Preference.getIntIdHuman("idPet1", search.this));
-        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this, infoPet.get(0), humanId, idType);
+        ServiceAdapter adapterMenu = new ServiceAdapter(services, search.this, infoPet.get(0), humanId);
         adapterMenu.notifyDataSetChanged();
         rv_services.setAdapter(adapterMenu);
     }

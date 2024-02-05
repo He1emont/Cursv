@@ -16,7 +16,6 @@
         android:textSize="20sp"
         android:text="Нам нужно больше сведений о вас, чтобы продолжить"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.408"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton_back3" />
 

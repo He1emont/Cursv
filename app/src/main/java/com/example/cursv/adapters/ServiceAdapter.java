@@ -13,10 +13,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cursv.Models.Veterinarians;
 import com.example.cursv.R;
 import com.example.cursv.Models.Service;
 import com.example.cursv.activities.Health;
 import com.example.cursv.activities.SigningUpForServiceActivity;
+import com.example.cursv.activities.VeterinarianInfoActivity;
 import com.example.cursv.activities.search;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -63,6 +65,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
                             context.findViewById(R.id.bottomSheetService)
                     );
             bottomSheetView.findViewById(R.id.v_dismiss).setOnClickListener(view1 -> bottomSheetDialog.dismiss());
+            bottomSheetView.findViewById(R.id.linearLayout2).setOnClickListener(view1 -> vetInfo(context.getVeterinarianById(service.getIdDoctor())));
             LinearLayout ll_signing = bottomSheetView.findViewById(R.id.ll_signing);
             ll_signing.setOnClickListener(view1 -> serviceSigning(service));
             TextView tv_bs_service_name = bottomSheetView.findViewById(R.id.tv_bs_service_name);
@@ -87,6 +90,12 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
             }
             bottomSheetDialog.show();
         });
+    }
+
+    private void vetInfo(Veterinarians veterinarian) {
+        Intent intent = new Intent(context, VeterinarianInfoActivity.class);
+        intent.putExtra("IdDoctor", veterinarian);
+        context.startActivity(intent);
     }
 
     private void serviceSigning(Service service) {

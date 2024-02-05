@@ -13,7 +13,7 @@ import com.example.cursv.R;
 
 public class HomeActivity extends DatabaseUtils {
 
-    private ImageButton btn_logOut, imagePet1;
+    private ImageButton btn_logOut, imagePet1, btn_profile;
     private Button btn_services, next, btn_vet;
     TextView textHumanName;
     @Override
@@ -33,6 +33,7 @@ public class HomeActivity extends DatabaseUtils {
 
     private void initViews(){
         btn_services = findViewById(R.id.btn_services);
+        btn_profile = findViewById(R.id.btn_profile);
         btn_logOut = findViewById(R.id.btn_logOut);
         textHumanName = findViewById(R.id.textHumanName);
         imagePet1 = findViewById(R.id.imagePet1);
@@ -64,13 +65,19 @@ public class HomeActivity extends DatabaseUtils {
                     .show();
         });
         btn_services.setOnClickListener(view -> {
-            Intent intent = new Intent(HomeActivity.this, CustomerServicesActivity.class);
-            startActivity(intent);
+            next(CustomerServicesActivity.class);
         });
         btn_vet.setOnClickListener(view -> {
-            Intent intent = new Intent(HomeActivity.this, VeterinariansActivity.class);
-            startActivity(intent);
+            next(VeterinariansActivity.class);
         });
+        btn_profile.setOnClickListener(view -> {
+            next(ProfileActivity.class);
+        });
+    }
+
+    private void next(Class newClass){
+        Intent intent = new Intent(HomeActivity.this, newClass);
+        startActivity(intent);
     }
     private void logOut() {
         Preference.setAuthSettings("login", "", HomeActivity.this);

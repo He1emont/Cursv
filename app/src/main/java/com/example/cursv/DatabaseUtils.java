@@ -8,8 +8,10 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cursv.Models.Human;
 import com.example.cursv.Models.Service;
 import com.example.cursv.Models.SigningUpForService;
+import com.example.cursv.Models.VeterinarianType;
 import com.example.cursv.Models.Veterinarians;
 
 import java.time.LocalDateTime;
@@ -26,11 +28,43 @@ public class DatabaseUtils extends AppCompatActivity {
         //Создание таблиц БД, если они не существуют
         database.execSQL("CREATE TABLE IF NOT EXISTS Human (id INTEGER PRIMARY KEY AUTOINCREMENT, Login TEXT, Password TEXT, FullName TEXT, Email TEXT, Phone TEXT, UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS Pet (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Type TEXT, Gender TEXT, DateOfBirth TEXT, IdHuman INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Veterinarians (id INTEGER PRIMARY KEY AUTOINCREMENT, FIO TEXT, Experience INTEGER, UNIQUE(id))");
-        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, idDoctor INTEGER, idType INTEGER, DurationMin INTEGER,FOREIGN KEY (idDoctor) REFERENCES Veterinarians(id), UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS VeterinarianTypes (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Veterinarians (id INTEGER PRIMARY KEY AUTOINCREMENT, FIO TEXT, Experience INTEGER, idVeterinarianType INTEGER, FOREIGN KEY (idVeterinarianType) REFERENCES VeterinarianTypes(id), UNIQUE(id))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS Services (id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Cost DECIMAL, idDoctor INTEGER, idType INTEGER, DurationMin INTEGER, FOREIGN KEY (idDoctor) REFERENCES Veterinarians(id), UNIQUE(id))");
         database.execSQL("CREATE TABLE IF NOT EXISTS SigningUpForServices (id LONG, Date DATETIME,  idService INTEGER, idHuman INTEGER, Address TEXT, FOREIGN KEY (idService) REFERENCES Services(id), FOREIGN KEY (idHuman) REFERENCES Human(id), UNIQUE(id))");
+        dataSetForVeterinarianType();
         dataSetForVeterinarians();
         dataSetForService();
+    }
+
+    public long addVeterinarianType(VeterinarianType veterinarianType) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        ContentValues values = new ContentValues();
+        values.put("Name", veterinarianType.getName());
+
+        long result = db.insert("VeterinarianTypes", null, values);
+        db.close();
+
+        return result;
+    }
+
+    public VeterinarianType getVeterinarianTypeById(int id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM VeterinarianTypes WHERE id = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        VeterinarianType veterinarianType = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("Name"));
+            veterinarianType = new VeterinarianType(id, name);
+        }
+
+        cursor.close();
+        db.close();
+
+        return veterinarianType;
     }
 
     public long addVeterinarians(Veterinarians veterinarians) {
@@ -38,6 +72,7 @@ public class DatabaseUtils extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put("FIO", veterinarians.getFio());
         values.put("Experience", veterinarians.getExperience());
+        values.put("idVeterinarianType", veterinarians.getIdVeterinarianType());
 
         long result = db.insert("Veterinarians", null, values);
         db.close();
@@ -55,8 +90,9 @@ public class DatabaseUtils extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             @SuppressLint("Range") String fio = cursor.getString(cursor.getColumnIndex("FIO"));
             @SuppressLint("Range") int experience = cursor.getInt(cursor.getColumnIndex("Experience"));
+            @SuppressLint("Range") int idVeterinarianType = cursor.getInt(cursor.getColumnIndex("idVeterinarianType"));
 
-            Veterinarian = new Veterinarians(id, fio, experience);
+            Veterinarian = new Veterinarians(id, fio, experience, idVeterinarianType);
         }
 
         cursor.close();
@@ -76,8 +112,9 @@ public class DatabaseUtils extends AppCompatActivity {
             @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
             @SuppressLint("Range") String fio = cursor.getString(cursor.getColumnIndex("FIO"));
             @SuppressLint("Range") int experience = cursor.getInt(cursor.getColumnIndex("Experience"));
+            @SuppressLint("Range") int idVeterinarianType = cursor.getInt(cursor.getColumnIndex("idVeterinarianType"));
 
-            Veterinarians veterinarian = new Veterinarians(id, fio, experience);
+            Veterinarians veterinarian = new Veterinarians(id, fio, experience, idVeterinarianType);
             veterinarians.add(veterinarian);
         }
 
@@ -286,12 +323,25 @@ public class DatabaseUtils extends AppCompatActivity {
         addService(service5);
     }
 
+    private void dataSetForVeterinarianType(){
+        VeterinarianType veterinarianType1 = new VeterinarianType(1, "Ветеринарный врач-хирург");
+        VeterinarianType veterinarianType2 = new VeterinarianType(2, "Ветеринарный врач-эндокринолог");
+        VeterinarianType veterinarianType3 = new VeterinarianType(3, "Ветеринарный врач-онколог");
+        VeterinarianType veterinarianType4 = new VeterinarianType(4, "Ветеринарный врач-кардиолог");
+        VeterinarianType veterinarianType5 = new VeterinarianType(5, "Ветеринарный врач-дерматолог");
+        addVeterinarianType(veterinarianType1);
+        addVeterinarianType(veterinarianType2);
+        addVeterinarianType(veterinarianType3);
+        addVeterinarianType(veterinarianType4);
+        addVeterinarianType(veterinarianType5);
+    }
+
     private void dataSetForVeterinarians(){
-        Veterinarians veterinarian1 = new Veterinarians(1, "Иванов Иван Иванович", 5);
-        Veterinarians veterinarian2 = new Veterinarians(1, "Петров Петр Петрович", 3);
-        Veterinarians veterinarian3 = new Veterinarians(1, "Васильев Василий Васильевич", 2);
-        Veterinarians veterinarian4 = new Veterinarians(1, "Иваннько Евгений Андреевич", 8);
-        Veterinarians veterinarian5 = new Veterinarians(1, "Андреев Андрей Петрович", 1);
+        Veterinarians veterinarian1 = new Veterinarians(1, "Иванов Иван Иванович", 5, 1);
+        Veterinarians veterinarian2 = new Veterinarians(1, "Петров Петр Петрович", 3, 2);
+        Veterinarians veterinarian3 = new Veterinarians(1, "Васильев Василий Васильевич", 2, 3);
+        Veterinarians veterinarian4 = new Veterinarians(1, "Иваннько Евгений Андреевич", 8, 4);
+        Veterinarians veterinarian5 = new Veterinarians(1, "Андреев Андрей Петрович", 1, 5);
         addVeterinarians(veterinarian1);
         addVeterinarians(veterinarian2);
         addVeterinarians(veterinarian3);
@@ -403,6 +453,50 @@ public class DatabaseUtils extends AppCompatActivity {
         database.close();
         Log.d("Human", name);
         return name;
+    }
+
+    public Human getHumanById(int id) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+        String query = "SELECT * FROM Human WHERE id = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        Human human = null;
+
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String login = cursor.getString(cursor.getColumnIndex("Login"));
+            @SuppressLint("Range") String password = cursor.getString(cursor.getColumnIndex("Password"));
+            @SuppressLint("Range") String fullName = cursor.getString(cursor.getColumnIndex("FullName"));
+            @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex("Email"));
+            @SuppressLint("Range") String phone = cursor.getString(cursor.getColumnIndex("Phone"));
+
+            human = new Human(id, login, password, fullName, email, phone);
+        }
+
+        cursor.close();
+        db.close();
+
+        return human;
+    }
+
+    public boolean updateHuman(Human human) {
+        SQLiteDatabase db = getBaseContext().openOrCreateDatabase("Vet.db", MODE_PRIVATE, null);
+
+        ContentValues values = new ContentValues();
+        values.put("Login", human.getLogin());
+        values.put("Password", human.getPassword());
+        values.put("FullName", human.getFullName());
+        values.put("Email", human.getEmail());
+        values.put("Phone", human.getPhone());
+
+        String whereClause = "id=?";
+        String[] whereArgs = {String.valueOf(human.getId())};
+
+        int rowsUpdated = db.update("Human", values, whereClause, whereArgs);
+
+        db.close();
+
+        return rowsUpdated > 0;
     }
 
     //Получение имени пользователя

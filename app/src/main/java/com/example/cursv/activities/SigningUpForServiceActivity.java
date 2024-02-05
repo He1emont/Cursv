@@ -1,7 +1,5 @@
 package com.example.cursv.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -9,12 +7,14 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.example.cursv.DatabaseUtils;
 import com.example.cursv.Models.Service;
@@ -23,11 +23,14 @@ import com.example.cursv.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class SigningUpForServiceActivity extends DatabaseUtils {
@@ -41,6 +44,12 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
     private Calendar dateAndTime = Calendar.getInstance();
     private EditText et_Address;
     private String address;
+    private ListView rv_booked_time;
+    private List<SigningUpForService> existingServices;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private List<String> datesList;
+    private ArrayAdapter<String> adapter;
+    private RelativeLayout rl_not_found;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +65,6 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
         initListeners();
         tv_ss_service_name.setText(service.getNameService());
         List<SigningUpForService> signings = getAllSigning();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         for (SigningUpForService signing : signings) {
             Log.d("SigningUpForService","id: " + signing.getId()
                     + " Date: " + signing.getDate().format(formatter)
@@ -66,6 +74,13 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
     }
 
     private void initViews(){
+        existingServices = getAllSigning();
+        datesList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datesList);
+
+        rl_not_found = findViewById(R.id.rl_not_found);
+        rv_booked_time = findViewById(R.id.rv_booked_time);
+        rv_booked_time.setAdapter(adapter);
         ibtn_close = findViewById(R.id.ibtn_close);
         tv_ss_service_name = findViewById(R.id.tv_ss_service_name);
         tv_date_time = findViewById(R.id.tv_date_time);
@@ -76,6 +91,40 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
         if (idType==1){
             et_Address.setVisibility(View.GONE);
         }
+    }
+
+    private void initDataSetForRecycleView(Date selectedDate){
+        rl_not_found.setVisibility(View.GONE);
+        datesList.clear();
+        for (SigningUpForService signing : existingServices) {
+            Log.d("existingServices","id: " + signing.getId()
+                    + " Date: " + signing.getDate().format(formatter)
+                    + " service/human: " + signing.getIdService()
+                    + "/" + signing.getIdHuman());
+        }
+        LocalDate selectedLocalDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        for (SigningUpForService existingService : existingServices) {
+            if (service.getIdService() == existingService.getIdService()) {
+                Log.d("selectedDate", selectedDate.toString());
+                LocalDateTime existingStart = existingService.getDate();
+                LocalDateTime existingEnd = existingStart.plusMinutes(getServiceById(existingService.getIdService()).getDurationMin());
+
+                // Проверка, что дата existingStart соответствует выбранной дате
+                if (isSameDate(existingStart.toLocalDate(), selectedLocalDate)) {
+                    Log.d("selectedDate", selectedDate.toString());
+                    datesList.add(existingStart.format(formatter) + " - " + existingEnd.format(formatter));
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
+        if(datesList.size()==0){
+            rl_not_found.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Метод для проверки, что две даты соответствуют одному и тому же дню
+    private boolean isSameDate(LocalDate date1, LocalDate date2) {
+        return date1.equals(date2);
     }
 
     private void initListeners(){
@@ -89,6 +138,7 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
             dateAndTime.set(Calendar.MONTH, monthOfYear);
             dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             setInitialDateTime();
+            initDataSetForRecycleView(dateAndTime.getTime());
         };
         ll_ss_date.setOnClickListener(view ->
                 new DatePickerDialog(SigningUpForServiceActivity.this, d,
@@ -142,8 +192,6 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
             return;
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        List<SigningUpForService> existingServices = getAllSigning();
         long selectedTimeMillis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         for (SigningUpForService existingService : existingServices) {
             if(service.getIdService()==existingService.getIdService()){
@@ -158,9 +206,7 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
 
                 if (selectedTimeMillis > existingStartMillis && selectedTimeMillis < existingEndMillis) {
                     // Время пересекается с существующей записью, выводим сообщение и завершаем метод
-                    Snackbar.make(findViewById(android.R.id.content), "Выбранное время уже занято." +
-                            "\nВыберите время раньше, либо позднее:\n" +
-                            existingStart.format(formatter) + "-" + existingEnd.format(formatter), Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(android.R.id.content), "Выбранное время уже занято", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -176,7 +222,6 @@ public class SigningUpForServiceActivity extends DatabaseUtils {
                 + signing.getIdHuman() + " Address: "
                 + signing.getAddress()
         );
-//        Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServicesActivity.class);
         Intent intent = new Intent(SigningUpForServiceActivity.this, CustomerServiceInfoActivity.class);
         intent.putExtra("signing", signing);
         startActivity(intent);

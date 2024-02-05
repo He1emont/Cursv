@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,7 +27,7 @@ import java.util.List;
 public class VeterinarianInfoActivity extends DatabaseUtils {
 
     private ImageButton iBtn_back;
-    private TextView tv_fio, tv_experience, tv_year;
+    private TextView tv_fio, tv_experience, tv_year, tv_type;
     private RecyclerView rv_veterinarian_services;
     private RelativeLayout rl_not_found;
     private List<Service> services = new ArrayList<>();
@@ -49,6 +50,7 @@ public class VeterinarianInfoActivity extends DatabaseUtils {
         iBtn_back = findViewById(R.id.iBtn_back);
         tv_fio = findViewById(R.id.tv_fio);
         tv_year = findViewById(R.id.tv_year);
+        tv_type = findViewById(R.id.tv_type);
         tv_experience = findViewById(R.id.tv_experience);
         rv_veterinarian_services = findViewById(R.id.rv_veterinarian_services);
         rv_veterinarian_services.setLayoutManager(new LinearLayoutManager(this));
@@ -58,11 +60,15 @@ public class VeterinarianInfoActivity extends DatabaseUtils {
     private void initData(){
         tv_fio.setText(veterinarian.getFio());
         tv_experience.setText(String.valueOf(veterinarian.getExperience()));
+        tv_type.setText(getVeterinarianTypeById(veterinarian.getIdVeterinarianType()).getName());
         tv_year.setText(getYearText(veterinarian.getExperience()));
         humanId = Preference.getIntIdHuman("humanId", VeterinarianInfoActivity.this);
         services = getServicesByDoctorId(veterinarian.getId());
         if (services!=null){
-            initializeAdapter();
+            if(services.size()==0){
+                rl_not_found.setVisibility(View.VISIBLE);
+            }
+            else initializeAdapter();
         }
     }
 

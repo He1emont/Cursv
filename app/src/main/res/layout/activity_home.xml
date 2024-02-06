@@ -65,7 +65,7 @@
             <Button
                 android:id="@+id/btn_vet"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rounded_button"
                 android:drawableLeft="@drawable/ic_doctor"
                 android:text="Ветеринары"
@@ -75,7 +75,7 @@
             <Button
                 android:id="@+id/button_health"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rounded_button"
                 android:drawableLeft="@drawable/ic_medicine_treatment"
                 android:text="Лечение"
@@ -85,7 +85,7 @@
             <Button
                 android:id="@+id/btn_services"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rounded_button"
                 android:drawableLeft="@drawable/ic_registration"
                 android:text="Записи"
@@ -119,7 +119,7 @@
     <TextView
         android:id="@+id/textHumanName"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
